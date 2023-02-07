@@ -1,0 +1,36 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: doks-example
+spec:
+  type: LoadBalancer
+  selector:
+    app: doks-example
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doks-example
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: doks-example
+  template:
+    metadata:
+      labels:
+        app: doks-example
+    spec:
+      containers:
+      - name: nginx
+        image: registry.digitalocean.com/jeff-starterkit-reg/doks-example:syd1
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        imagePullPolicy: Always
