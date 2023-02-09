@@ -2,8 +2,27 @@
 set -euo pipefail
 CLUSTER="example"
 SERVICE="doks-example"
-CONTEXT="do-nyc1-${CLUSTER}"
-doctl k8s cluster create ${CLUSTER}
-kubectl --context ${CONTEXT} apply -f manifest.yaml
-script/wait-for-service ${CONTEXT} ${SERVICE}
-open http://$(kubectl --context ${CONTEXT} get service ${SERVICE} --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
+DC=$1
+REGISTRY="jeff-starterkit-reg"
+# You need to change the registry name
+IMAGE="registry.digitalocean.com/${REGISTRY}/doks-example"
+TARGET="${IMAGE}:${DC}"
+CONTEXT="do-${DC}-${CLUSTER}"
+MANIFEST_FILE="manifest.yaml"
+BACKUP_MANIFEST_FILE="manifest.yaml.bak"
+# doctl k8s cluster create ${CLUSTER}
+
+# Make a backup file for manifest.yaml
+cp $MANIFEST_FILE $BACKUP_MANIFEST_FILE
+sed -i '' "s|TARGET|${TARGET}|g" $MANIFEST_FILE
+
+
+cat $MANIFEST_FILE
+
+echo "kubectl --context ${CONTEXT} apply -f ${MANIFEST_FILE}"
+
+# kubectl --context ${CONTEXT} apply -f ${MANIFEST_FILE}
+rm $MANIFEST_FILE
+mv $BACKUP_MANIFEST_FILE $MANIFEST_FILE
+# script/wait-for-service ${CONTEXT} ${SERVICE}
+# open http://$(kubectl --context ${CONTEXT} get service ${SERVICE} --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")

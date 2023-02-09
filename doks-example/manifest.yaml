@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: registry.digitalocean.com/jeff-starterkit-reg/doks-example:syd1
+        image: TARGET
         ports:
         - containerPort: 80
           protocol: TCP

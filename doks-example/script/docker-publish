@@ -1,8 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
-IMAGE="registry.digitalocean.com/jeff-starterkit-reg/doks-example"
+FILE="web/index.html"
+BACKUP_FILE="index.html.bak"
+DC=$1
+REGISTRY="jeff-starterkit-reg"
+# You need to change the registry name
+IMAGE="registry.digitalocean.com/${REGISTRY}/doks-example"
 TARGET="${IMAGE}:${DC}"
+
+# Make a backup file for index.html
+cp $FILE index.html.bak
+sed -i '' "/\DC/s//$DC/" $FILE
 
 # If you are developing with Apple M1 series chipset, then you should specify the --platform=linux/amd64 
 docker build --no-cache --platform=linux/amd64 -t ${TARGET} .
 docker push ${TARGET}
+
+# After build, remove the modified index.html and move index.html.bak back for next iteration
+rm $FILE
+mv $BACKUP_FILE $FILE
+
+
