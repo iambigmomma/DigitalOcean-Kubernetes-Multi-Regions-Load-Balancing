@@ -247,6 +247,18 @@ You will see the following information displayed in your terminal.
 <title>Welcome to DOKS @ lon1</title>
 ```
 
+# 4. Turn down everything
+```sh
+cd doks-example
+export DC=lon1
+# Select yes when you get a prompt
+./script/down $DC
+
+export DC=syd1
+# Select yes when you get a prompt
+./script/down $DC
+```
+<!-- # 5. Cost analysis -->
 <!-- # Common error message and how to troubleshooting
 
 - doctl, docker, kubectl
