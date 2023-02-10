@@ -2,7 +2,7 @@
 set -euo pipefail
 FILE="web/index.html"
 BACKUP_FILE="index.html.bak"
-DC=$1
+DC="$1"
 REGISTRY="jeff-starterkit-reg"
 # You need to change the registry name
 IMAGE="registry.digitalocean.com/${REGISTRY}/doks-example"
