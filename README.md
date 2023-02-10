@@ -200,7 +200,7 @@ You will see the following information displayed in your terminal.
 <title>Welcome to DOKS @ lon1</title>
 ```
 
-# Common error message and how to troubleshooting
+<!-- # Common error message and how to troubleshooting
 
 - doctl, docker, kubectl
 - container registry
@@ -208,7 +208,7 @@ You will see the following information displayed in your terminal.
 - pull images but always crash
 (使用alwaypullimage policy)
 (刪除registry上的檔案重新push或是用新的tagging)
-- 
+-  -->
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -247,7 +247,7 @@ You will see the following information displayed in your terminal.
 
 
 <!-- CONTACT -->
-## Contact
+# Contact
 
 Jeff Fan - jfan@digitalocean.com
 
