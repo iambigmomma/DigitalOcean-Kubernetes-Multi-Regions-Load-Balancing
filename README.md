@@ -74,22 +74,141 @@
 # Getting Started
 
 
+## Architecture diagram
+![architecture](./assets/architecture.png)
+
+## Introduction
+
+In this tutorial, we'll guide you through the process of setting up global load balancing for a multi-region Kubernetes cluster using Cloudflare as the global load balancer and DigitalOcean's Managed Kubernetes product, DOKS. We'll set up the example clusters in the London and Sydney datacenters. Kubernetes is an open-source platform for automating deployment, scaling, and management of containerized applications, and is widely used for modernizing application infrastructure. By deploying a Kubernetes cluster in multiple regions and using Cloudflare as the global load balancer, you can ensure high availability and low latency for your users, regardless of their location. We'll show you how to configure Cloudflare and DOKS to optimize performance and reliability for your users.
 
 
 ## Prerequisites
 
 Below are what you will need before using Sauce Labs's API testing platform,
 1. A DigitalOcean account ([Log in](https://cloud.digitalocean.com/login) or sign up by my [referal link](https://m.do.co/c/7c424df00920))
-2. doctl CLI([tutorial](https://docs.digitalocean.com/reference/doctl/how-to/install/))
-3. Kubernetes
-4. A Cloudflare account
+2. A Cloudflare account
+3. doctl CLI([tutorial](https://docs.digitalocean.com/reference/doctl/how-to/install/))
+4. Docker
+5. Kubernetes
+6. Your domain
 
 
 ## Environmental setup
 
-## Architecture diagram
-![architecture](./assets/architecture.png)
 
+
+
+
+
+
+# 1. DigitalOcean - Create DOKS clustersin multi-regions
+
+The goal of this step is to create two Kubernetes clusters using DigitalOcean's Managed Kubernetes (DOKS) service in different datacenters, London and Sydney, and deploy a public facing nginx service.
+
+## Create new DOKS clusters
+
+To make it simple and quick, you can follow this [video](https://www.youtube.com/watch?v=k50reywjO5U) tutorial and create the first cluster in just 10 minutes.
+
+Once you have created the first cluster(London), repeat the same process to create the second cluster in the different datacenter (Sydney).
+
+## Deploy a public-facing nginx service
+
+To deploy the service, follow these steps:
+
+```sh
+cd doks-example/
+
+# Setup the datacenter env to lon1 for London-based cluster
+export DC=lon1
+
+# Build an new image that including lon1 text in the header
+./script/docker-publish $DC
+
+# Create a DOKS cluster at London datacenter and deploy service
+./script/up $DC
+```
+Wait until a new window pops up. You should see a landing page similar to the following,
+![lon1](./assets/lon1.png)
+
+Repeat the same process to create a Sydney-based cluster by setting the environment variable DC to syd1:
+```sh
+# Setup the datacenter env to lon1 for London-based cluster
+export DC=syd1
+
+# Build an new image that including lon1 text in the header
+./script/docker-publish $DC
+
+# Create a DOKS cluster at London datacenter and deploy service
+./script/up $DC
+
+```
+Wait until a new window pops up. You should see a landing page similar to the following,
+![syd1](./assets/syd1.png)
+
+
+# 2. Cloudflare: Setup Global Load Balancer
+## Add site to Cloudflare
+To create a new Cloudflare site, follow these steps:
+
+1. Add a site to work with. For this tutorial, we will use `isfusion.cloud` as the domain.
+
+2. Add a host entry. You can add any random entry that will not be used.
+
+3. Use a root domain name instead of a subdomain
+
+4. To begin, select the "Add Site" link located in the top right corner of the page.
+
+![add-site-cloudflare](./assets/add-site-cloudflare.png)
+
+## Turn on load-balancing
+
+Go to the Traffic section in the menu and choose "Load Balancing"
+![turn-on-lb](./assets/turn-on-lb.png)
+
+The wizard will ask you to choose a subscription if you don't already have one. We suggest picking the cheapest option, which is enough for this tutorial as we only need two servers to show what Cloudflare can do. The subscription will also ask you how many regions should check the health of your servers and if you want to turn on dynamic traffic management for faster response times and geographic routing.
+![subscription-plan](./assets/subscription-plan.png)
+
+Upon completion of the previous step, you will be directed to this page.
+
+![setting-page](./assets/setting-page.png)
+
+Click the "Create Laod Balancer"
+
+
+
+
+
+# 3. Verify The Global Load Balancing
+
+You can verify the randomly distributed incoming traffic between London and Sydney datacenters (with a 50/50 weighting) by running some simple commands.
+
+```sh
+./verify.sh
+```
+You will see the following information displayed in your terminal.
+
+```sh
+<title>Welcome to DOKS @ lon1</title>
+<title>Welcome to DOKS @ syd1</title>
+<title>Welcome to DOKS @ lon1</title>
+<title>Welcome to DOKS @ syd1</title>
+<title>Welcome to DOKS @ lon1</title>
+<title>Welcome to DOKS @ syd1</title>
+<title>Welcome to DOKS @ syd1</title>
+<title>Welcome to DOKS @ lon1</title>
+<title>Welcome to DOKS @ syd1</title>
+<title>Welcome to DOKS @ lon1</title>
+```
+
+# Common error message and how to troubleshooting
+
+- doctl, docker, kubectl
+- container registry
+- svc crashed loop
+- pull images but always crash
+(使用alwaypullimage policy)
+(刪除registry上的檔案重新push或是用新的tagging)
+- 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
