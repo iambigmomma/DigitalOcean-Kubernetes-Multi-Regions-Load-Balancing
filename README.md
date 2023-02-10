@@ -34,7 +34,7 @@
     <img src="https://www.digitalocean.com/_next/static/media/logo.87a8f3b8.svg" alt="Logo" >
   </a>
 
-<h3 align="center">DigitalOcean | Multi-Region DOKS Clusters Load Balancing Tutorial </h3>
+<h3 align="center">DigitalOcean | Multi-Regions DOKS Cluster Load Balancing Tutorial </h3>
 
   <p align="center">
     This tutorial is mainly about how to setup multi-region DOKS clusters with geographical load balancing
@@ -79,7 +79,7 @@
 
 ## Introduction
 
-In this tutorial, we'll guide you through the process of setting up global load balancing for a multi-region Kubernetes cluster using Cloudflare as the global load balancer and DigitalOcean's Managed Kubernetes product, DOKS. We'll set up the example clusters in the London and Sydney datacenters. Kubernetes is an open-source platform for automating deployment, scaling, and management of containerized applications, and is widely used for modernizing application infrastructure. By deploying a Kubernetes cluster in multiple regions and using Cloudflare as the global load balancer, you can ensure high availability and low latency for your users, regardless of their location. We'll show you how to configure Cloudflare and DOKS to optimize performance and reliability for your users.
+In this tutorial, we'll guide you through the process of setting up global load balancing for a multi-regions Kubernetes cluster using Cloudflare as the global load balancer and DigitalOcean's Managed Kubernetes product, DOKS. We'll set up the example clusters in the London and Sydney datacenters. Kubernetes is an open-source platform for automating deployment, scaling, and management of containerized applications, and is widely used for modernizing application infrastructure. By deploying a Kubernetes cluster in multiple regions and using Cloudflare as the global load balancer, you can ensure high availability and low latency for your users, regardless of their location. We'll show you how to configure Cloudflare and DOKS to optimize performance and reliability for your users.
 
 
 ## Prerequisites
@@ -174,8 +174,55 @@ Upon completion of the previous step, you will be directed to this page.
 
 Click the "Create Laod Balancer"
 
+## Setting a hostname 
+
+We are going to put together our endpoints and health checks to make a load balancer. We will use Cloudflare's servers as a full proxy, so all web traffic will go through them. This is the default option. Another option is just to redirect the traffic with DNS, but this won't let us use the full benefits of these platforms, like caching and keeping web traffic secure. This example will use `doks-multi-regions-cluster.isfusion.cloud` as the hostname.
+
+![hostname](./assets/hostname.png)
 
 
+## Create an Origin Pool
+
+The first step in using Cloudflare is to decide where you want the traffic to go. This can be any group of computers that can receive traffic from the internet. The more spread out these computers are, the better it is to use a service like Cloudflare to control the traffic.
+
+To use Kubernetes clusters as origins, they must be set up to receive traffic from the internet by having a service with an external IP address. This can be done by using a Load Balancer service or a tool called an ingress controller like NGINX. To find the IP address to use for a service, you can use the following command:
+
+```sh
+# Get all context first 
+$ kubectl config get-contexts 
+$ kubectl config use-contexts do-lon1-doks-lon1-multi-region-cluster
+$ kubectl get services doks-example
+NAME           TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)        AGE
+doks-example   LoadBalancer   10.245.70.99   138.68.118.154   80:31010/TCP   28h
+```
+![create-origin-pool](./assets/create-origin-pool.png)
+
+
+## Create monitor and add notification
+We need to make sure the nodes in our pool are working properly. We do this by checking their health on a regular schedule. If a node fails the check, it will be marked as not working and will not receive any traffic until it passes the check again. Sometimes nodes stop working because of upgrades or other problems. For this example, we will check if the NGINX program on each cloud is showing its default page. For more complicated situations, it's a good idea to have a special page that tests the connection to all the data sources and makes sure everything is working correctly. If we don't do this, the load balancer might think the program is still working when it's actually not.
+
+![create-monitor](./assets/create-monitor.png)
+
+## Traffic sterring
+In this example, when we make the pool, we are using weighting to control the incoming traffic. We have two groups of computers, one in London and one in Sydney. Both groups will get the same amount of traffic (50%).
+
+![traffic-steering](./assets/select-routing-algorithm.png)
+
+## Custom rule(optional)
+This step is optional. You can choose to set up your own rules for how the traffic is spread around the world, or you can just click "Next" and skip it.
+
+![custom-rule](./assets/custom-rule.png)
+
+## Review & deploy
+When you have finished setting everything up, you can make your first multi-regional DOKS cluster with traffic control around the world by clicking the "Save and Deploy" button.
+![review-deploy](./assets/review-deploy.png)
+
+
+
+## Multi-regions cluster is ready!
+Now you will see a new load balancer on the screen with a healthy status and other settings.
+
+![eploy](./assets/deploy.png)
 
 
 # 3. Verify The Global Load Balancing
