@@ -30,8 +30,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://saucelabs.com/resources/topics/api-testing">
-    <img src="https://www.digitalocean.com/_next/static/media/logo.87a8f3b8.svg" alt="Logo" >
+  <a href="https://digitalocean.com/">
+    <img src="https://consent.trustarc.com/v2/asset/20:55:23.714y33gof_DO_Logo-Blue.png" alt="Logo" >
   </a>
 
 <h3 align="center">DigitalOcean | Multi-Regions DOKS Cluster Load Balancing Tutorial </h3>
