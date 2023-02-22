@@ -84,7 +84,6 @@ In this tutorial, we'll guide you through the process of setting up global load 
 
 ## Prerequisites
 
-Below are what you will need before using Sauce Labs's API testing platform,
 1. A DigitalOcean account ([Log in](https://cloud.digitalocean.com/login) or sign up by my [referal link](https://m.do.co/c/7c424df00920))
 2. A Cloudflare account
 3. doctl CLI([tutorial](https://docs.digitalocean.com/reference/doctl/how-to/install/))
@@ -101,7 +100,7 @@ Below are what you will need before using Sauce Labs's API testing platform,
 
 
 
-# 1. DigitalOcean - Create DOKS clustersin multi-regions
+# 1. DigitalOcean - Create DOKS clusters in multi-regions
 
 The goal of this step is to create two Kubernetes clusters using DigitalOcean's Managed Kubernetes (DOKS) service in different datacenters, London and Sydney, and deploy a public facing nginx service.
 
